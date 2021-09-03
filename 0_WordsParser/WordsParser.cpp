@@ -1,4 +1,5 @@
 #include "WordsParser.h"
+#include <string.h>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -14,7 +15,7 @@ void WordsParser::LogInfo(std::string info) {
 WordsParser::WordsParser(std::string inputFilename, std::string outputFilename, bool useLogs) {
     this->useLogs = useLogs;
     this->inputFilename = inputFilename;
-    this->outputFilename = outputFilename + ".csv";
+    this->outputFilename = outputFilename;
 
     this->LogInfo("Create words parser");
     this->LogInfo("Set filename: " + inputFilename);
@@ -33,6 +34,28 @@ void WordsParser::AddWord(std::string word) {
     this->wordsCount++;
 }
 
+void WordsParser::AddFromLine(std::string rawStr) {
+    int wordBegin = 0;
+    int wordSize = 0;
+    for (int i = 0; i < rawStr.size(); ++i) {
+        if (isalpha(rawStr[i]) || isdigit(rawStr[i])) {
+            wordSize++;
+        }
+        else {
+            if (wordSize > 0) {
+                std::string word = rawStr.substr(wordBegin, wordSize);
+                this->AddWord(word);
+            }
+            wordSize = 0;
+            wordBegin = i + 1;
+        }
+    }
+    if (wordSize > 0) {
+        std::string word = rawStr.substr(wordBegin, wordSize);
+        this->AddWord(word);
+    }
+}
+
 void WordsParser::ParseFile() {
     this->LogInfo("Parsing from file");
 
@@ -40,10 +63,10 @@ void WordsParser::ParseFile() {
     file.open(this->inputFilename.c_str());
 
     while (true) {
-        std::string word;
-        std::getline(file, word);
+        std::string line;
+        std::getline(file, line);
         if( file.eof() ) break;
-        this->AddWord(word);
+        this->AddFromLine(line);
     }
 
     this->SortWords();
@@ -69,10 +92,10 @@ void WordsParser::WriteToCSV() {
 void WordsParser::SortWords() {
     this->LogInfo("Sorting words by count");
 
-    std::sort( this->orderedWords.begin(), this->orderedWords.end(), std::bind(
+    this->orderedWords.sort(std::bind(
         &WordsParser::CompareWordsByCount,
         this,
         std::placeholders::_1,
         std::placeholders::_2
-    ) );
+    ));
 }
