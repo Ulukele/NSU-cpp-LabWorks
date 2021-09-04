@@ -61,13 +61,13 @@ void WordsParser::ParseFile() {
     std::ifstream file;
     file.open(this->inputFilename.c_str());
 
-    while (true) {
+    while ( !file.eof() ) {
         std::string line;
         std::getline(file, line);
-        if( file.eof() ) break;
         this->AddFromLine(line);
     }
-
+    file.close();
+    
     this->SortWords();
 }
 
@@ -85,7 +85,7 @@ void WordsParser::WriteToCSV() {
         float percent = 100.0 * this->words[word] / this->wordsCount;
         file << word << ',' << this->words[word] << ',' << percent << std::endl;
     }
-
+    file.close();
 }
 
 void WordsParser::SortWords() {
