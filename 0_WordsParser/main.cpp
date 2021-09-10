@@ -20,4 +20,8 @@ int main(int argc, char** argv) {
     );
     wp->ParseFile();
     wp->WriteToCSV();
+
+    delete wp;
+
+    return 0;
 }

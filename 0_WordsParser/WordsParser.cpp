@@ -15,6 +15,7 @@ WordsParser::WordsParser(std::string& inputFilename, std::string& outputFilename
     this->useLogs = useLogs;
     this->inputFilename = inputFilename;
     this->outputFilename = outputFilename;
+    wordsCount = 0;
 
     LogInfo("Create words parser");
     LogInfo("Set filename: " + inputFilename);
