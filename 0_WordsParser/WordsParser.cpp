@@ -6,7 +6,7 @@
 
 
 void WordsParser::LogInfo(std::string info) {
-    if (this->useLogs) {
+    if (useLogs) {
         std::cout << "INFO | " << info << std::endl;
     }
 }
@@ -16,21 +16,21 @@ WordsParser::WordsParser(std::string inputFilename, std::string outputFilename, 
     this->inputFilename = inputFilename;
     this->outputFilename = outputFilename;
 
-    this->LogInfo("Create words parser");
-    this->LogInfo("Set filename: " + inputFilename);
+    LogInfo("Create words parser");
+    LogInfo("Set filename: " + inputFilename);
 }
 
 void WordsParser::AddWord(std::string word) {
-    if (this->words.find(word) != this->words.end()) {
-        this->LogInfo("Add word: " + word);
-        this->words[word]++;
+    if (words.find(word) != words.end()) {
+        LogInfo("Add word: " + word);
+        words[word]++;
     }
     else {
-        this->LogInfo("Add new word: " + word);
-        this->words[word] = 1;
-        this->orderedWords.push_back(word);
+        LogInfo("Add new word: " + word);
+        words[word] = 1;
+        orderedWords.push_back(word);
     }
-    this->wordsCount++;
+    wordsCount++;
 }
 
 void WordsParser::AddFromLine(std::string rawStr) {
@@ -43,7 +43,7 @@ void WordsParser::AddFromLine(std::string rawStr) {
         else {
             if (wordSize > 0) {
                 std::string word = rawStr.substr(wordBegin, wordSize);
-                this->AddWord(word);
+                AddWord(word);
             }
             wordSize = 0;
             wordBegin = i + 1;
@@ -51,47 +51,47 @@ void WordsParser::AddFromLine(std::string rawStr) {
     }
     if (wordSize > 0) {
         std::string word = rawStr.substr(wordBegin, wordSize);
-        this->AddWord(word);
+        AddWord(word);
     }
 }
 
 void WordsParser::ParseFile() {
-    this->LogInfo("Parsing from file");
+    LogInfo("Parsing from file");
 
     std::ifstream file;
-    file.open(this->inputFilename.c_str());
+    file.open(inputFilename.c_str());
 
     while ( !file.eof() ) {
         std::string line;
         std::getline(file, line);
-        this->AddFromLine(line);
+        AddFromLine(line);
     }
     file.close();
     
-    this->SortWords();
+    SortWords();
 }
 
 bool WordsParser::CompareWordsByCount(std::string first, std::string second) {
-    return ( this->words[first] > this->words[second] );
+    return ( words[first] > words[second] );
 }
 
 void WordsParser::WriteToCSV() {
-    this->LogInfo("Writing to: " + this->outputFilename);
+    LogInfo("Writing to: " + outputFilename);
     std::ofstream file;
-    file.open(this->outputFilename.c_str());
+    file.open(outputFilename.c_str());
 
     file << "Word" << ',' << "Count" << ',' << "Percent" << std::endl;
-    for (auto word: this->orderedWords) {
-        float percent = 100.0 * this->words[word] / this->wordsCount;
-        file << word << ',' << this->words[word] << ',' << percent << std::endl;
+    for (auto word: orderedWords) {
+        float percent = 100.0 * words[word] / wordsCount;
+        file << word << ',' << words[word] << ',' << percent << std::endl;
     }
     file.close();
 }
 
 void WordsParser::SortWords() {
-    this->LogInfo("Sorting words by count");
+    LogInfo("Sorting words by count");
 
-    this->orderedWords.sort(std::bind(
+    orderedWords.sort(std::bind(
         &WordsParser::CompareWordsByCount,
         this,
         std::placeholders::_1,
