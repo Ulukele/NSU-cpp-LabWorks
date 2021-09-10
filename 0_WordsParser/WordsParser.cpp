@@ -11,7 +11,7 @@ void WordsParser::LogInfo(std::string info) {
     }
 }
 
-WordsParser::WordsParser(std::string inputFilename, std::string outputFilename, bool useLogs) {
+WordsParser::WordsParser(std::string& inputFilename, std::string& outputFilename, bool useLogs) {
     this->useLogs = useLogs;
     this->inputFilename = inputFilename;
     this->outputFilename = outputFilename;
@@ -20,7 +20,7 @@ WordsParser::WordsParser(std::string inputFilename, std::string outputFilename, 
     LogInfo("Set filename: " + inputFilename);
 }
 
-void WordsParser::AddWord(std::string word) {
+void WordsParser::AddWord(std::string& word) {
     if (words.find(word) != words.end()) {
         LogInfo("Add word: " + word);
         words[word]++;
@@ -33,7 +33,7 @@ void WordsParser::AddWord(std::string word) {
     wordsCount++;
 }
 
-void WordsParser::AddFromLine(std::string rawStr) {
+void WordsParser::AddFromLine(std::string& rawStr) {
     int wordBegin = 0;
     int wordSize = 0;
     for (int i = 0; i < rawStr.size(); ++i) {
@@ -71,7 +71,7 @@ void WordsParser::ParseFile() {
     SortWords();
 }
 
-bool WordsParser::CompareWordsByCount(std::string first, std::string second) {
+bool WordsParser::CompareWordsByCount(std::string& first, std::string& second) {
     return ( words[first] > words[second] );
 }
 

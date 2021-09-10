@@ -6,6 +6,8 @@
 
 class WordsParser {
 
+    private:
+
     std::string inputFilename;
     std::string outputFilename;
     int wordsCount;
@@ -14,15 +16,14 @@ class WordsParser {
     bool useLogs;
 
     void SortWords();
-    bool CompareWordsByCount(std::string first, std::string second);
-    void AddFromLine(std::string rawStr);
-    void AddWord(std::string word);
+    bool CompareWordsByCount(std::string& first, std::string& second);
+    void AddFromLine(std::string& rawStr);
+    void AddWord(std::string& word);
     void LogInfo(std::string info);
-
 
     public:
 
-    WordsParser(std::string inputFilename, std::string outputFilename="parsed-data.csv", bool useLogs=true);
+    WordsParser(std::string& inputFilename, std::string& outputFilename, bool useLogs=true);
     void ParseFile();
     void WriteToCSV();
 };
