@@ -62,6 +62,25 @@ int main() {
     std::cout << "HT contains : " << ht.contains("Copied") << std::endl;
     std::cout << "copied contains : " << copied.contains("Copied") << std::endl;
 
+    std::cout << "Copy HT to copied" << std::endl;
+    copied = ht;
+
+    std::cout << "HT contains : " << ht.contains("Copied") << std::endl;
+    std::cout << "copied contains : " << copied.contains("Copied") << std::endl;
+
+    std::cout << "Clear HT.";
+    ht.clear();
+    std::cout << "HT size: " << ht.size() << std::endl;
+    std::cout << "copied size: " << copied.size() << std::endl;
+
+    std::cout << "Compare HT == copied, result: " << (ht == copied) << std::endl;
+    std::cout << "Compare HT != copied, result: " << (ht != copied) << std::endl;
+
+    std::cout << "Call ht = copied" << std::endl;
+    ht = copied;
+    std::cout << "Compare HT == copied, result: " << (ht == copied) << std::endl;
+    std::cout << "Compare HT != copied, result: " << (ht != copied) << std::endl;
+
     std::cout << "End work with Hash Table | <int>" << std::endl;
     
     return 0;

@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 template <class T>
-typename HashTable<T>::Storage::iterator HashTable<T>::find(const Key& k) {
+typename HashTable<T>::Storage::iterator HashTable<T>::find(const Key& k) const {
     int idx = hash(k) % memorySize;
     for (auto iter = memory[idx].begin(); iter != memory[idx].end(); ++iter) {
         if ((*iter).first == k) {
@@ -28,7 +28,10 @@ HashTable<T>::~HashTable() {
 template <class T>
 HashTable<T>::HashTable(const HashTable& b) 
     : memorySize(b.memorySize), actualSize(b.actualSize) {
-    memory = new HashTable<T>::Storage(*b.memory);
+    memory = new HashTable<T>::Storage[b.memorySize];
+    for (int i = 0; i < b.memorySize; ++i) {
+        memory[i] = HashTable<T>::Storage(b.memory[i]);
+    }
 }
 
 template <class T>
@@ -44,7 +47,11 @@ HashTable<T>& HashTable<T>::operator=(const HashTable& b) {
         memorySize = b.memorySize;
         actualSize = b.actualSize;
         delete[] memory;
-        memory = new HashTable<T>::Storage(*b.memory);
+        memory = new HashTable<T>::Storage[b.memorySize];
+        for (int i = 0; i < b.memorySize; ++i) {
+            memory[i] = HashTable<T>::Storage(b.memory[i]);
+        }
+
     }
     return *this;
 }
@@ -126,13 +133,8 @@ typename HashTable<T>::Value& HashTable<T>::at(const Key& k) {
 
 template <class T>
 const typename HashTable<T>::Value& HashTable<T>::at(const Key& k) const {
-    int idx = hash(k) % memorySize;
-    for (auto iter = memory[idx].begin(); iter != memory[idx].end(); ++iter) {
-        if ((*iter).first == k) {
-            return iter->second;
-        }
-    }
-    throw std::runtime_error("There is no such key");
+    typename HashTable<T>::Storage::iterator iter = find(k);
+    return iter->second;
 }
 
 template <class T>
@@ -143,4 +145,24 @@ size_t HashTable<T>::size() const {
 template <class T>
 bool HashTable<T>::empty() const {
     return  (actualSize == 0);
+}
+
+template <class U>
+bool operator==(const HashTable<U>& a, const HashTable<U>& b) {
+    for (int i = 0; i < a.memorySize; ++i) {
+        for (const auto& key_value : a.memory[i]) {
+            if (!b.contains(key_value.first)) {
+                return false;
+            }
+            if (b.at(key_value.first) != key_value.second) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+template <class U>
+bool operator!=(const HashTable<U>& a, const HashTable<U>& b) {
+    return !(a == b);
 }

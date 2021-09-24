@@ -2,14 +2,15 @@
 #include <string>
 #include <functional>
 #include <list>
+#include <vector>
 
 template <class T>
-
 class HashTable {
     typedef std::string Key;
     typedef T Value;
     typedef std::pair<Key, Value> Node;
     typedef std::list< Node > Storage;
+    typedef std::vector< Storage > Memory;
 
     int memorySize;
     size_t actualSize;
@@ -17,7 +18,7 @@ class HashTable {
 
     std::hash<Key> hash;
 
-    typename Storage::iterator find(const Key& k);
+    typename Storage::iterator find(const Key& k) const;
 
     public:
 
@@ -57,8 +58,11 @@ class HashTable {
     size_t size() const;
     bool empty() const;
 
-    // friend bool operator==(const HashTable& a, const HashTable& b);
-    // friend bool operator!=(const HashTable& a, const HashTable& b);
+    template<class U>
+    friend bool operator==(const HashTable<U>& a, const HashTable<U>& b);
+
+    template<class U>
+    friend bool operator!=(const HashTable<U>& a, const HashTable<U>& b);
 };
 
 template class HashTable<int>;
