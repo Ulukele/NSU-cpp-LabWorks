@@ -40,6 +40,7 @@ HashTable<T>::HashTable(HashTable<T>&& b) noexcept
     : memorySize(b.memorySize), actualSize(b.actualSize)  {
     memory = b.memory;
     b.memory = nullptr;
+    b.actualSize = 0;
 }
 
 template <class T>
@@ -128,12 +129,18 @@ typename HashTable<T>::Value& HashTable<T>::operator[](const Key& k) {
 
 template <class T>
 typename HashTable<T>::Value& HashTable<T>::at(const Key& k) {
+    if ( !contains(k) ) {
+        throw std::runtime_error("There is no such key");
+    }
     typename HashTable<T>::Storage::iterator iter = find(k);
     return iter->second;
 }
 
 template <class T>
 const typename HashTable<T>::Value& HashTable<T>::at(const Key& k) const {
+    if ( !contains(k) ) {
+        throw std::runtime_error("There is no such key");
+    }
     typename HashTable<T>::Storage::iterator iter = find(k);
     return iter->second;
 }
