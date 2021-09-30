@@ -1,5 +1,6 @@
 #include "HashTable.h"
 #include <stdexcept>
+#include <string>
 
 template <class T>
 typename HashTable<T>::Storage::iterator HashTable<T>::find(const Key& k) const {
@@ -26,7 +27,7 @@ HashTable<T>::~HashTable() {
 }
 
 template <class T>
-HashTable<T>::HashTable(const HashTable& b) 
+HashTable<T>::HashTable(const HashTable<T>& b)
     : memorySize(b.memorySize), actualSize(b.actualSize) {
     memory = new HashTable<T>::Storage[b.memorySize];
     for (int i = 0; i < b.memorySize; ++i) {
@@ -35,14 +36,14 @@ HashTable<T>::HashTable(const HashTable& b)
 }
 
 template <class T>
-HashTable<T>::HashTable(HashTable&& b) noexcept
+HashTable<T>::HashTable(HashTable<T>&& b) noexcept
     : memorySize(b.memorySize), actualSize(b.actualSize)  {
     memory = b.memory;
     b.memory = nullptr;
 }
 
 template <class T>
-HashTable<T>& HashTable<T>::operator=(const HashTable& b) {
+HashTable<T>& HashTable<T>::operator=(const HashTable<T>& b) {
     if (&b != this) {
         memorySize = b.memorySize;
         actualSize = b.actualSize;
@@ -57,7 +58,7 @@ HashTable<T>& HashTable<T>::operator=(const HashTable& b) {
 }
 
 template <class T>
-HashTable<T>& HashTable<T>::operator=(HashTable&& b) noexcept {
+HashTable<T>& HashTable<T>::operator=(HashTable<T>&& b) noexcept {
     memorySize = b.memorySize;
     actualSize = b.actualSize;
     memory = b.memory;
@@ -67,7 +68,7 @@ HashTable<T>& HashTable<T>::operator=(HashTable&& b) noexcept {
 }
 
 template <class T>
-void HashTable<T>::swap(HashTable& b) {
+void HashTable<T>::swap(HashTable<T>& b) {
     std::swap(memorySize, b.memorySize);
     std::swap(actualSize, b.actualSize);
     std::swap(memory, b.memory);
@@ -147,8 +148,8 @@ bool HashTable<T>::empty() const {
     return  (actualSize == 0);
 }
 
-template <class U>
-bool operator==(const HashTable<U>& a, const HashTable<U>& b) {
+template <class T>
+bool operator==(const HashTable<T>& a, const HashTable<T>& b) {
     for (int i = 0; i < a.memorySize; ++i) {
         for (const auto& key_value : a.memory[i]) {
             if (!b.contains(key_value.first)) {
@@ -159,10 +160,24 @@ bool operator==(const HashTable<U>& a, const HashTable<U>& b) {
             }
         }
     }
+    for (int i = 0; i < b.memorySize; ++i) {
+        for (const auto& key_value : b.memory[i]) {
+            if (!a.contains(key_value.first)) {
+                return false;
+            }
+            if (a.at(key_value.first) != key_value.second) {
+                return false;
+            }
+        }
+    }
     return true;
 }
+template bool operator==<int>(const HashTable<int>& a, const HashTable<int>& b);
+template bool operator==<std::string>(const HashTable<std::string>& a, const HashTable<std::string>& b);
 
-template <class U>
-bool operator!=(const HashTable<U>& a, const HashTable<U>& b) {
+template <class T>
+bool operator!=(const HashTable<T>& a, const HashTable<T>& b) {
     return !(a == b);
 }
+template bool operator!=<int>(const HashTable<int>& a, const HashTable<int>& b);
+template bool operator!=<std::string>(const HashTable<std::string>& a, const HashTable<std::string>& b);

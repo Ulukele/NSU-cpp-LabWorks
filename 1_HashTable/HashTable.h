@@ -5,12 +5,19 @@
 #include <vector>
 
 template <class T>
+class HashTable;
+
+template <class T>
+bool operator==(const HashTable<T>& a, const HashTable<T>& b);
+template <class T>
+bool operator!=(const HashTable<T>& a, const HashTable<T>& b);
+
+template <class T>
 class HashTable {
     typedef std::string Key;
     typedef T Value;
     typedef std::pair<Key, Value> Node;
     typedef std::list< Node > Storage;
-    typedef std::vector< Storage > Memory;
 
     int memorySize;
     size_t actualSize;
@@ -58,11 +65,8 @@ class HashTable {
     size_t size() const;
     bool empty() const;
 
-    template<class U>
-    friend bool operator==(const HashTable<U>& a, const HashTable<U>& b);
-
-    template<class U>
-    friend bool operator!=(const HashTable<U>& a, const HashTable<U>& b);
+    friend bool operator==<T>(const HashTable& a, const HashTable& b);
+    friend bool operator!=<T>(const HashTable& a, const HashTable& b);
 };
 
 template class HashTable<int>;

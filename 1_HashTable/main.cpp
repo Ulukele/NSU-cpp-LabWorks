@@ -62,13 +62,23 @@ int main() {
     std::cout << "HT contains : " << ht.contains("Copied") << std::endl;
     std::cout << "copied contains : " << copied.contains("Copied") << std::endl;
 
+    std::cout << "Do swap between HT and copied" << std::endl;
+    ht.swap(copied);
+    std::cout << "(after swap) HT contains : " << ht.contains("Copied") << std::endl;
+    std::cout << "(after swap) copied contains : " << copied.contains("Copied") << std::endl;
+
+    std::cout << "Do swap back between HT and copied" << std::endl;
+    ht.swap(copied);
+    std::cout << "(after swap back) HT contains : " << ht.contains("Copied") << std::endl;
+    std::cout << "(after swap back) copied contains : " << copied.contains("Copied") << std::endl;
+
     std::cout << "Copy HT to copied" << std::endl;
     copied = ht;
 
     std::cout << "HT contains : " << ht.contains("Copied") << std::endl;
     std::cout << "copied contains : " << copied.contains("Copied") << std::endl;
 
-    std::cout << "Clear HT.";
+    std::cout << "Clear HT. ";
     ht.clear();
     std::cout << "HT size: " << ht.size() << std::endl;
     std::cout << "copied size: " << copied.size() << std::endl;
