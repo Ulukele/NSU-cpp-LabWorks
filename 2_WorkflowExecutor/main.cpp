@@ -3,6 +3,6 @@
 #include "WorkflowExecutor.h"
 
 int main() {
-    WorkflowExecutor::Instance().Execute("../WorkflowsExamples/test1.txt");
+    WorkflowExecutor::Instance().Execute("test1.txt");
     return 0;
 }

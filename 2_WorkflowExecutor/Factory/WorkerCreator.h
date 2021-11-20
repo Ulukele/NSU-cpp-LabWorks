@@ -10,8 +10,8 @@ namespace Common {
             WorkersFactory::Instance().RegisterCreator(name, this);
         }
 
-        IWorker* Create(std::vector< std::string >& args) override {
-            return new T(args);
+        IWorker* Create(std::vector< std::string >& args, std::string& data) override {
+            return new T(args, data);
         }
     };
 }

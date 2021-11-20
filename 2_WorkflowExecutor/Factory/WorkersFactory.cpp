@@ -14,12 +14,12 @@ namespace Common {
         }
         makers[worker_name] = creator;
     }
-    IWorker* WorkersFactory::Create(const std::string& name, std::vector< std::string >& args) {
+    IWorker* WorkersFactory::Create(const std::string& name, std::vector< std::string >& args, std::string data) {
         auto iter_ = makers.find(name);
         if (iter_ == makers.end()) {
             throw std::exception(); // TODO exception 'Unrecognized worker type!'
         }
         IWorkerCreator* creator = iter_->second;
-        return creator->Create(args);
+        return creator->Create(args, data);
     }
 }

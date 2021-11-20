@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <regex>
+#include <memory>
 
 #include "iostream"
 
@@ -19,7 +20,8 @@ WorkflowExecutor& WorkflowExecutor::Instance() {
 
 bool parse_str(
         std::string& str,
-        std::map<std::string, std::vector<std::string>>& blocks,
+        std::map<std::string, std::string>& blocks_names,
+        std::map<std::string, std::vector<std::string>>& blocks_args,
         std::list<std::string>& order
         ) {
     std::regex base(R"(desc\s([^]*)\scsed\s([^]*))");
@@ -42,13 +44,19 @@ bool parse_str(
         std::string args_s = matched[2];
         std::vector<std::string> args;
 
-        // parse args
+
         std::stringstream s_stream(args_s);
         std::string value;
+
+        // parse name
+        std::getline(s_stream, value, ' ');
+        blocks_names[key] = value;
+
+        // parse args
         while (std::getline(s_stream, value, ' ')) {
             args.push_back(value);
         }
-        blocks[key] = args;
+        blocks_args[key] = args;
     }
 
     // parsing order
@@ -64,6 +72,15 @@ bool parse_str(
     return true;
 }
 
+bool IsCompatible(WorkerType first, WorkerType second) {
+    bool first_out = first == WorkerType::OUT || first == WorkerType::INOUT;
+    bool second_in = second == WorkerType::IN || second == WorkerType::INOUT;
+
+    if (first_out != second_in) return false;
+
+    return true;
+}
+
 void WorkflowExecutor::Execute(const std::string &workflow_file) {
     std::ifstream input(workflow_file);
     std::stringstream buffer_;
@@ -71,28 +88,39 @@ void WorkflowExecutor::Execute(const std::string &workflow_file) {
     std::string workflow_raw = std::string( buffer_.str() );
 
     std::list<std::string> order;
-    std::map<std::string, std::vector<std::string>> blocks;
+    std::map<std::string, std::string> blocks_names;
+    std::map<std::string, std::vector<std::string>> blocks_args;
 
-    bool parsed = parse_str(workflow_raw, blocks, order);
+    bool parsed = parse_str(workflow_raw, blocks_names, blocks_args, order);
     if ( !parsed ) {
         throw std::exception(); // TODO exception with text
     }
 
+    //    TODO: remove DEBUG cout's
+    for (const auto& node : order) {
+        std::cout << "(" << blocks_names[node] << ") -> ";
+    }
+    std::cout << std::endl;
+
+    std::string input_data;
+    auto previous_type = WorkerType::NONE;
     for (const auto& node: order) {
-        const auto iter = blocks.find(node);
-        if ( iter == blocks.end()) {
+        const auto iter_args = blocks_args.find(node);
+        const auto iter_names = blocks_names.find(node);
+        if ( iter_args == blocks_args.end() || iter_names == blocks_names.end()) {
             throw std::exception(); // TODO exception with 'item in order not defined'
         }
-        IWorker worker = WorkersFactory::Instance().Create(*iter[0], )
+        std::unique_ptr<IWorker> worker(
+                WorkersFactory::Instance().Create(iter_names->second, iter_args->second, input_data)
+                );
+        auto worker_type = worker->GetType();
+        if ( !IsCompatible(previous_type, worker_type) ) {
+            throw std::exception(); // TODO exception
+        }
+        previous_type = worker_type;
+
+        input_data = worker->Execute();
     }
 
-//    TODO: remove DEBUG cout's
-//    for (const auto& node : order) {
-//        std::cout << "(";
-//        for (const auto& arg : blocks[node]) {
-//            std::cout << arg << " ";
-//        }
-//        std::cout << ") -> ";
-//    }
-//    std::cout << std::endl;
+
 }

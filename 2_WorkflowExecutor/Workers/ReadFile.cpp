@@ -4,21 +4,16 @@
 #include "../Factory/WorkersFactory.h"
 #include "../Factory/WorkerCreator.h"
 
-ReadFile::ReadFile (std::vector< std::string >& args) :
-    input_file(args[0]),
-    output(nullptr)
+ReadFile::ReadFile (std::vector< std::string >& args, std::string& data) :
+    input_file(args[0])
     {}
 
-ReadFile::~ReadFile() {
-    delete output;
-}
-
-std::string* ReadFile::Execute() {
+std::string ReadFile::Execute() {
     std::ifstream input(this->input_file);
     std::stringstream buffer_;
     buffer_ << input.rdbuf();
-    output = new std::string( buffer_.str() );
-    return output;
+    auto result = std::string( buffer_.str() );
+    return result;
 }
 
 Common::WorkerType ReadFile::GetType() {
@@ -26,4 +21,4 @@ Common::WorkerType ReadFile::GetType() {
 }
 
 // Register creator
-Common::WorkerCreator<ReadFile> maker("readfile");
+static Common::WorkerCreator<ReadFile> maker("readfile");

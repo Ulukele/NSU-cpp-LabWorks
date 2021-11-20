@@ -10,7 +10,7 @@ namespace Common {
     public:
         static WorkersFactory &Instance();
         void RegisterCreator(const std::string &worker_name, IWorkerCreator *creator);
-        IWorker* Create(const std::string& name, std::vector< std::string >& args);
+        IWorker* Create(const std::string& name, std::vector< std::string >& args, std::string data);
     private:
         WorkersFactory() {};
         WorkersFactory(const WorkersFactory& obj);

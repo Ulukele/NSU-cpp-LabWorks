@@ -4,13 +4,13 @@
 #include <string>
 #include "../Factory/IWorker.h"
 
-class ReadFile : public Common::IWorker {
+class Sort : public Common::IWorker {
 public:
-    ReadFile(std::vector< std::string >& args, std::string& data);
-    ~ReadFile() override = default;
+    Sort(std::vector< std::string >& args, std::string& data);
+    ~Sort() override = default;
     std::string Execute() override;
     Common::WorkerType GetType() override;
 
 private:
-    std::string input_file;
+    std::string data;
 };

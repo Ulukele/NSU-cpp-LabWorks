@@ -15,7 +15,13 @@ set(
         Workers/ReadFile.h
         WorkflowExecutor.cpp
         WorkflowExecutor.h
-)
+        Workers/WriteFile.cpp
+        Workers/WriteFile.h
+        Workers/Dump.cpp
+        Workers/Dump.h
+        Workers/Sort.cpp
+        Workers/Sort.h
+        Workers/Replace.cpp Workers/Replace.h Workers/Grep.cpp Workers/Grep.h)
 
 set(
         WORKFLOWS
@@ -30,7 +36,7 @@ if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
 
     foreach(item IN LISTS data_SHADOW)
         message(STATUS ${item})
-        FILE(COPY ${item} DESTINATION "${CMAKE_BINARY_DIR}/bin")
+        FILE(COPY ${item} DESTINATION "${CMAKE_BINARY_DIR}")
     endforeach()
 endif()
 
