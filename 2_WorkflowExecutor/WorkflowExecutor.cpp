@@ -2,6 +2,10 @@
 #include "Factory/WorkersFactory.h"
 #include "Factory/IWorker.h"
 
+#include "Exceptions/UnknownBlock.h"
+#include "Exceptions/ConflictingBlockType.h"
+#include "Exceptions/InvalidWorkflow.h"
+
 #include <fstream>
 #include <list>
 #include <vector>
@@ -93,14 +97,8 @@ void WorkflowExecutor::Execute(const std::string &workflow_file) {
 
     bool parsed = parse_str(workflow_raw, blocks_names, blocks_args, order);
     if ( !parsed ) {
-        throw std::exception(); // TODO exception with text
+        throw InvalidWorkflow();
     }
-
-    //    TODO: remove DEBUG cout's
-    for (const auto& node : order) {
-        std::cout << "(" << blocks_names[node] << ") -> ";
-    }
-    std::cout << std::endl;
 
     std::string input_data;
     auto previous_type = WorkerType::NONE;
@@ -108,14 +106,14 @@ void WorkflowExecutor::Execute(const std::string &workflow_file) {
         const auto iter_args = blocks_args.find(node);
         const auto iter_names = blocks_names.find(node);
         if ( iter_args == blocks_args.end() || iter_names == blocks_names.end()) {
-            throw std::exception(); // TODO exception with 'item in order not defined'
+            throw UnknownBlock("Unknown block '" + node + "'");
         }
         std::unique_ptr<IWorker> worker(
                 WorkersFactory::Instance().Create(iter_names->second, iter_args->second, input_data)
                 );
         auto worker_type = worker->GetType();
         if ( !IsCompatible(previous_type, worker_type) ) {
-            throw std::exception(); // TODO exception
+            throw ConflictingBlockType();
         }
         previous_type = worker_type;
 

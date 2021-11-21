@@ -13,31 +13,22 @@ set(
         Factory/WorkerCreator.h
         Workers/ReadFile.cpp
         Workers/ReadFile.h
-        WorkflowExecutor.cpp
-        WorkflowExecutor.h
         Workers/WriteFile.cpp
         Workers/WriteFile.h
         Workers/Dump.cpp
         Workers/Dump.h
         Workers/Sort.cpp
         Workers/Sort.h
-        Workers/Replace.cpp Workers/Replace.h Workers/Grep.cpp Workers/Grep.h)
-
-set(
-        WORKFLOWS
-        WorkflowsExamples/test1.txt
-)
-
-# Copying workflows to bin directory
-if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
-
-    # list of files for which we add a copy rule
-    set(data_SHADOW ${WORKFLOWS})
-
-    foreach(item IN LISTS data_SHADOW)
-        message(STATUS ${item})
-        FILE(COPY ${item} DESTINATION "${CMAKE_BINARY_DIR}")
-    endforeach()
-endif()
+        Workers/Replace.cpp
+        Workers/Replace.h
+        Workers/Grep.cpp
+        Workers/Grep.h
+        WorkflowExecutor.cpp
+        WorkflowExecutor.h
+        Exceptions/ConflictingBlockType.h
+        Exceptions/UnknownBlock.h
+        Exceptions/InvalidWorkflow.h
+        Exceptions/RegisterWorker.h
+        Exceptions/CreateWorker.h)
 
 add_executable(2_WorkflowExecutor ${PROJECT_FILES_})
