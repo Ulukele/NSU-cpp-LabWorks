@@ -6,7 +6,7 @@
 
 class ReadFile : public Common::IWorker {
 public:
-    ReadFile(std::vector< std::string >& args, std::string& data);
+    ReadFile(std::vector< std::string >& args, std::string& data_);
     ~ReadFile() override = default;
     std::string Execute() override;
     Common::WorkerType GetType() override;

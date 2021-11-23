@@ -6,7 +6,7 @@
 
 class Sort : public Common::IWorker {
 public:
-    Sort(std::vector< std::string >& args, std::string& data);
+    Sort(std::vector< std::string >& args, std::string& data_);
     ~Sort() override = default;
     std::string Execute() override;
     Common::WorkerType GetType() override;

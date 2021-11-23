@@ -29,6 +29,9 @@ set(
         Exceptions/UnknownBlock.h
         Exceptions/InvalidWorkflow.h
         Exceptions/RegisterWorker.h
-        Exceptions/CreateWorker.h)
+        Exceptions/CreateWorker.h
+        Exceptions/WorkerInitialization.h
+        Exceptions/BaseException.h
+    )
 
 add_executable(2_WorkflowExecutor ${PROJECT_FILES_})

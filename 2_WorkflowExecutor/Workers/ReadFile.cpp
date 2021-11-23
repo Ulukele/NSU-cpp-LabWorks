@@ -3,10 +3,17 @@
 #include <sstream>
 #include "../Factory/WorkersFactory.h"
 #include "../Factory/WorkerCreator.h"
+#include "../Exceptions/WorkerInitialization.h"
 
-ReadFile::ReadFile (std::vector< std::string >& args, std::string& data) :
-    input_file(args[0])
-    {}
+ReadFile::ReadFile (std::vector< std::string >& args, std::string& data_) {
+    if ( args.empty() ) {
+        throw WorkerInitialization("Missing arguments");
+    }
+    if ( args.size() > 1 ) {
+        throw WorkerInitialization("Got more than 1 arguments");
+    }
+    input_file = args[0];
+}
 
 std::string ReadFile::Execute() {
     std::ifstream input(this->input_file);

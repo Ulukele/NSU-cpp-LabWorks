@@ -6,7 +6,7 @@
 
 class Replace : public Common::IWorker {
 public:
-    Replace(std::vector< std::string >& args, std::string& data);
+    Replace(std::vector< std::string >& args, std::string& data_);
     ~Replace() override = default;
     std::string Execute() override;
     Common::WorkerType GetType() override;

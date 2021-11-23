@@ -4,10 +4,14 @@
 #include <algorithm>
 #include "../Factory/WorkersFactory.h"
 #include "../Factory/WorkerCreator.h"
+#include "../Exceptions/WorkerInitialization.h"
 
-Sort::Sort (std::vector< std::string >& args, std::string& data) :
-        data(data)
-{}
+Sort::Sort (std::vector< std::string >& args, std::string& data_) {
+    if ( !args.empty() ) {
+        throw WorkerInitialization("Unexpected arguments");
+    }
+    data = data_;
+}
 
 std::string Sort::Execute() {
     std::istringstream in(data);

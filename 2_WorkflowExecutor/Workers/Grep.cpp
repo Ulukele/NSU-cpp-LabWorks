@@ -4,11 +4,18 @@
 #include <sstream>
 #include "../Factory/WorkersFactory.h"
 #include "../Factory/WorkerCreator.h"
+#include "../Exceptions/WorkerInitialization.h"
 
-Grep::Grep (std::vector< std::string >& args, std::string& data) :
-        key(args[0]),
-        data(data)
-{}
+Grep::Grep (std::vector< std::string >& args, std::string& data_) {
+    if ( args.empty() ) {
+        throw WorkerInitialization("Missing arguments");
+    }
+    if ( args.size() > 1 ) {
+        throw WorkerInitialization("Got more than 1 arguments");
+    }
+    key = args[0];
+    data = data_;
+}
 
 std::string Grep::Execute() {
     std::string regex_str = "[^\n]*(" + key + ")[^\n]*";

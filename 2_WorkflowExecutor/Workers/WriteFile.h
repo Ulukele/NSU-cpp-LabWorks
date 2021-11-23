@@ -6,7 +6,7 @@
 
 class WriteFile : public Common::IWorker {
 public:
-    WriteFile(std::vector< std::string >& args, std::string& data);
+    WriteFile(std::vector< std::string >& args, std::string& data_);
     ~WriteFile() override = default;
     std::string Execute() override;
     Common::WorkerType GetType() override;

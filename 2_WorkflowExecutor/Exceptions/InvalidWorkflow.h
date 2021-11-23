@@ -1,18 +1,9 @@
 #pragma once
-#include <exception>
-#include <utility>
 
-class InvalidWorkflow : public std::exception
+#include "BaseException.h"
+
+class InvalidWorkflow : public BaseException
 {
 public:
-    InvalidWorkflow() = default;
-
-    const char* what() const noexcept override
-    {
-        return message.c_str();
-    }
-
-private:
-
-    std::string message = "Workflow is invalid";
+    explicit InvalidWorkflow(): BaseException("Errors while register worker") {}
 };

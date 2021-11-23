@@ -1,20 +1,10 @@
 #pragma once
-#include <exception>
-#include <utility>
 
-class RegisterWorker : public std::exception
+#include "BaseException.h"
+
+class RegisterWorker : public BaseException
 {
 public:
-    RegisterWorker() = default;
-
-    explicit RegisterWorker(std::string  message): message(std::move(message)) {}
-
-    const char* what() const noexcept override
-    {
-        return message.c_str();
-    }
-
-private:
-
-    std::string message = "Errors while register worker";
+    explicit RegisterWorker(): BaseException("Errors while register worker") {}
+    explicit RegisterWorker(const std::string& message): BaseException(message) {}
 };

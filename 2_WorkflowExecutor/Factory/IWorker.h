@@ -11,8 +11,8 @@ namespace Common {
 
     class IWorker {
     public:
-        virtual std::string Execute() {return "";};
-        virtual WorkerType GetType() {return WorkerType::NONE;};
+        virtual std::string Execute() = 0;
+        virtual WorkerType GetType() = 0;
 
         virtual ~IWorker() = default;
     };

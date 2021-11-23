@@ -1,20 +1,10 @@
 #pragma once
-#include <exception>
-#include <utility>
 
-class ConflictingBlockType : public std::exception
+#include "BaseException.h"
+
+class ConflictingBlockType : public BaseException
 {
 public:
-    ConflictingBlockType() = default;
-
-    explicit ConflictingBlockType(std::string  message): message(std::move(message)) {}
-
-    const char* what() const noexcept override
-    {
-        return message.c_str();
-    }
-
-private:
-
-    std::string message = "Conflicting block type";
+    explicit ConflictingBlockType(): BaseException("Conflicting block type") {}
+    explicit ConflictingBlockType(const std::string& message): BaseException(message) {}
 };

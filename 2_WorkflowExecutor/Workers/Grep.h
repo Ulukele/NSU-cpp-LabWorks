@@ -6,7 +6,7 @@
 
 class Grep : public Common::IWorker {
 public:
-    Grep(std::vector< std::string >& args, std::string& data);
+    Grep(std::vector< std::string >& args, std::string& data_);
     ~Grep() override = default;
     std::string Execute() override;
     Common::WorkerType GetType() override;

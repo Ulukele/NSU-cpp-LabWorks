@@ -6,7 +6,7 @@
 
 class Dump : public Common::IWorker {
 public:
-    Dump(std::vector< std::string >& args, std::string& data);
+    Dump(std::vector< std::string >& args, std::string& data_);
     ~Dump() override = default;
     std::string Execute() override;
     Common::WorkerType GetType() override;
