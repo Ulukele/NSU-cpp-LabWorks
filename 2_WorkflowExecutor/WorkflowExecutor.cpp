@@ -15,11 +15,6 @@
 
 using namespace Common;
 
-WorkflowExecutor& WorkflowExecutor::Instance() {
-    static WorkflowExecutor instance;
-    return instance;
-}
-
 namespace {
     bool parse_str(
             std::string& str,

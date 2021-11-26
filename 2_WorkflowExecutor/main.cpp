@@ -4,7 +4,8 @@
 int main() {
     try
     {
-        WorkflowExecutor::Instance().Execute("../WorkflowsExamples/working.txt");
+        WorkflowExecutor wf_executor;
+        wf_executor.Execute("../WorkflowsExamples/working.txt");
     }
     catch (std::exception &e)
     {
