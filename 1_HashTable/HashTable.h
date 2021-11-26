@@ -1,4 +1,5 @@
 #pragma once
+#include <stdexcept>
 #include <string>
 #include <functional>
 #include <list>
@@ -25,49 +26,173 @@ class HashTable {
 
     std::hash<Key> hash;
 
-    typename Storage::iterator find(const Key& k) const;
+    typename Storage::iterator find(const Key& k) const {
+        int idx = hash(k) % memorySize;
+        for (auto iter = memory[idx].begin(); iter != memory[idx].end(); ++iter) {
+            if ((*iter).first == k) {
+                return iter;
+            }
+        }
+        throw std::runtime_error("There is no such key");
+    }
 
     public:
 
-    HashTable();
-    ~HashTable();
+    HashTable() {
+        memorySize = 1000;
+        actualSize = 0;
+        memory = new HashTable<T>::Storage[memorySize];
+    }
 
-    HashTable(const HashTable& b);
-    HashTable(HashTable&& b) noexcept;
+    ~HashTable() {
+        delete[] memory;
+    }
 
+    HashTable(const HashTable<T>& b)
+            : memorySize(b.memorySize), actualSize(b.actualSize) {
+        memory = new HashTable<T>::Storage[b.memorySize];
+        for (int i = 0; i < b.memorySize; ++i) {
+            memory[i] = HashTable<T>::Storage(b.memory[i]);
+        }
+    }
 
-    HashTable& operator=(const HashTable& b);
-    HashTable& operator=(HashTable&& b) noexcept;
+    HashTable(HashTable<T>&& b) noexcept
+            : memorySize(b.memorySize), actualSize(b.actualSize)  {
+        memory = b.memory;
+        b.memory = nullptr;
+        b.actualSize = 0;
+    }
 
+    HashTable<T>& operator=(const HashTable<T>& b) {
+        if (&b != this) {
+            memorySize = b.memorySize;
+            actualSize = b.actualSize;
+            delete[] memory;
+            memory = new HashTable<T>::Storage[b.memorySize];
+            for (int i = 0; i < b.memorySize; ++i) {
+                memory[i] = HashTable<T>::Storage(b.memory[i]);
+            }
 
-    // Обменивает значения двух хэш-таблиц.
-    void swap(HashTable& b);
+        }
+        return *this;
+    }
 
-    // Очищает контейнер.
-    void clear();
-    // Удаляет элемент по заданному ключу.
-    bool erase(const Key& k);
-    // Вставка в контейнер. Возвращаемое значение - успешность вставки.
-    bool insert(const Key& k, const Value& v);
+    HashTable<T>& operator=(HashTable<T>&& b) noexcept {
+        memorySize = b.memorySize;
+        actualSize = b.actualSize;
+        memory = b.memory;
+        b.memory = nullptr;
 
-    // Проверка наличия значения по заданному ключу.
-    bool contains(const Key& k) const;
+        return *this;
+    }
 
-    // Возвращает значение по ключу. Небезопасный метод.
-    // В случае отсутствия ключа в контейнере, следует вставить в контейнер
-    // значение, созданное конструктором по умолчанию и вернуть ссылку на него.
-    Value& operator[](const Key& k);
+    void swap(HashTable<T>& b) {
+        std::swap(memorySize, b.memorySize);
+        std::swap(actualSize, b.actualSize);
+        std::swap(memory, b.memory);
+    }
 
-    // Возвращает значение по ключу. Бросает исключение при неудаче.
-    Value& at(const Key& k);
-    const Value& at(const Key& k) const;
+    void clear() {
+        for (int i = 0; i < memorySize; ++i) {
+            memory[i].clear();
+        }
+        actualSize = 0;
+    }
 
-    size_t size() const;
-    bool empty() const;
+    bool erase(const Key& k) {
+        int idx = hash(k) % memorySize;
+        if ( !contains(k) ) {
+            return false;
+        }
+        auto iter = find(k);
+        memory[idx].erase(iter);
+        actualSize -= 1;
+        return true;
+    }
+
+    bool insert(const Key& k, const Value& v) {
+        int idx = hash(k) % memorySize;
+        if ( contains(k) ) {
+            return false;
+        }
+        memory[idx].push_back(Node(k, v));
+        actualSize += 1;
+        return true;
+    }
+
+    bool contains(const Key& k) const {
+        int idx = hash(k) % memorySize;
+        for (auto iter = memory[idx].begin(); iter != memory[idx].end(); ++iter) {
+            if (iter->first == k) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Value& operator[](const Key& k) {
+
+        if ( !contains(k) ) {
+            insert(k, T());
+        }
+        typename HashTable<T>::Storage::iterator iter = find(k);
+        return iter->second;
+    }
+
+    Value& at(const Key& k) {
+        if ( !contains(k) ) {
+            throw std::runtime_error("There is no such key");
+        }
+        typename HashTable<T>::Storage::iterator iter = find(k);
+        return iter->second;
+    }
+
+    const Value& at(const Key& k) const {
+        if ( !contains(k) ) {
+            throw std::runtime_error("There is no such key");
+        }
+        typename HashTable<T>::Storage::iterator iter = find(k);
+        return iter->second;
+    }
+
+    size_t size() const {
+        return actualSize;
+    }
+
+    bool empty() const {
+        return  (actualSize == 0);
+    }
 
     friend bool operator==<T>(const HashTable& a, const HashTable& b);
     friend bool operator!=<T>(const HashTable& a, const HashTable& b);
 };
 
-template class HashTable<int>;
-template class HashTable<std::string>;
+template <class T>
+bool operator==(const HashTable<T>& a, const HashTable<T>& b) {
+    for (int i = 0; i < a.memorySize; ++i) {
+        for (const auto& key_value : a.memory[i]) {
+            if (!b.contains(key_value.first)) {
+                return false;
+            }
+            if (b.at(key_value.first) != key_value.second) {
+                return false;
+            }
+        }
+    }
+    for (int i = 0; i < b.memorySize; ++i) {
+        for (const auto& key_value : b.memory[i]) {
+            if (!a.contains(key_value.first)) {
+                return false;
+            }
+            if (a.at(key_value.first) != key_value.second) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+template <class T>
+bool operator!=(const HashTable<T>& a, const HashTable<T>& b) {
+    return !(a == b);
+}
