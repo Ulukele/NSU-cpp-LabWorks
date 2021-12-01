@@ -6,7 +6,7 @@ namespace Models {
         HEARTS,
         SPADES,
         DIAMONDS,
-        CROSSES
+        CLUBS
     };
 
     struct Card {

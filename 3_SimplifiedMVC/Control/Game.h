@@ -1,25 +1,36 @@
 #pragma once
 
 #include "../Models/BasePlayer.h"
-#include "../Models/HumanPlayer.h"
 #include "../Models/Board.h"
 
 
 namespace Control {
+
+    enum State {
+        FLOP, // 3 cards on table
+        TURN, // 4 cards on table
+        RIVER, // 5 cards on table
+        END
+    };
+
     class Game {
     public:
         Game(unsigned int num_players, unsigned int start_balance);
         void Start();
-        void Round();
-
+        void ProcessPlayersActions();
+        bool ContinueRound();
+        Models::Card PickOne();
+        void InitPlayers();
 
         Game(const Game &obj) = delete;
         Game &operator=(const Game &obj) = delete;
+        ~Game();
 
     private:
-        ~Game();
         std::vector<Models::BasePlayer*> players;
         Models::Board* board;
+        State state;
+        std::vector<Models::Card> deck;
     };
 }
 

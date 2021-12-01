@@ -2,14 +2,7 @@
 
 namespace {
     void PrintCard(const Models::Card& card) {
-        Models::Suit suit = card.suit;
-        int suit_code = 0;
-        if (suit == Models::Suit::CROSSES) suit_code = 5;
-        if (suit == Models::Suit::DIAMONDS) suit_code = 4;
-        if (suit == Models::Suit::HEARTS) suit_code = 3;
-        if (suit == Models::Suit::SPADES) suit_code = 6;
-        printf("%c", suit_code);
-
+        printf("[");
         if (card.value > 10) {
             if (card.value == 11) printf("J");
             if (card.value == 12) printf("D");
@@ -19,6 +12,12 @@ namespace {
         else {
             printf("%d", card.value);
         }
+        Models::Suit suit = card.suit;
+        if (suit == Models::Suit::CLUBS) printf("♣");
+        if (suit == Models::Suit::DIAMONDS) printf("♦");
+        if (suit == Models::Suit::HEARTS) printf("♥");
+        if (suit == Models::Suit::SPADES) printf("♠");
+        printf("]");
     }
 }
 
@@ -35,20 +34,29 @@ namespace View {
     }
 
     void Screen::Update() {
+        printf("\033[H\033[J");
+        printf("+---------------+---------+---------+---------+\n");
+        printf("| Name:         | score:  | bet:    | cards:  |\n");
+        printf("+---------------+---------+---------+---------+\n");
         for (const auto& player : players) {
-            printf("%15s: %6u ", player->GetName(), player->GetBalance());
+            printf("|%15s| %6u$ | %6u$ |", player->GetName(), player->GetBalance(), player->GetBet());
             if ( !player->IsBot() ) {
                 auto hand = player->GetHand();
                 PrintCard(hand.first);
                 printf(" ");
                 PrintCard(hand.second);
+                printf("|");
             }
-            printf("\n");
+            else {
+                printf("         |");
+            }
+            printf("\n+---------------+---------+---------+---------+\n");
         }
-        printf("\n\nTable Cards: ");
-        for (const auto& card : board->cards) {
+        printf("\nTable Cards: ");
+        for (const auto& card : board->GetCards()) {
             PrintCard(card);
-            printf(" - ");
+            printf(" ");
         }
+        printf("\n\n");
     }
 }

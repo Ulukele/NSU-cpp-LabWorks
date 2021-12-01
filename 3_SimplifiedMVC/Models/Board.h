@@ -2,14 +2,15 @@
 
 #include <vector>
 #include "Card.h"
+#include "BaseModel.h"
 
 
 namespace Models {
-    class Board {
+    class Board : public BaseModel {
     public:
         Board();
 
-        std::vector<Card>& GetCards();
+        const std::vector<Card>& GetCards() const;
         unsigned int GetPool() const;
         void RaisePool(unsigned int value);
         void AddCard(Card card);
