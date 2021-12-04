@@ -3,6 +3,7 @@
 #include <vector>
 #include "Card.h"
 #include "BaseModel.h"
+#include "BasePlayer.h"
 
 
 namespace Models {
@@ -15,6 +16,10 @@ namespace Models {
         void RaisePool(unsigned int value);
         void AddCard(Card card);
         void Clear();
+        void ProcessWinners(
+                const std::vector<BasePlayer*>& players,
+                const std::vector<std::vector<Card>>& combinations
+                );
 
         Board(const Board& obj) = delete;
         Board& operator=(const Board& obj) = delete;

@@ -40,7 +40,8 @@ namespace View {
         printf("+---------------+---------+---------+---------+\n");
         for (const auto& player : players) {
             printf("|%15s| %6u$ | %6u$ |", player->GetName(), player->GetBalance(), player->GetBet());
-            if ( !player->IsBot() ) {
+//            if ( !player->IsBot() ) {
+            if (true) {
                 auto hand = player->GetHand();
                 PrintCard(hand.first);
                 printf(" ");
@@ -52,6 +53,7 @@ namespace View {
             }
             printf("\n+---------------+---------+---------+---------+\n");
         }
+        printf("\nBank: %u", board->GetPool());
         printf("\nTable Cards: ");
         for (const auto& card : board->GetCards()) {
             PrintCard(card);

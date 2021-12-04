@@ -24,7 +24,7 @@ namespace Models {
         BasePlayer(unsigned int balance, const char* name);
 
         const char* GetName() const;
-        std::pair<Card, Card> GetHand() const;
+        const std::pair<Card, Card>& GetHand() const;
         unsigned int GetBalance() const;
         unsigned int GetBet() const;
         bool GetPlaying() const;
@@ -34,6 +34,8 @@ namespace Models {
         void RaiseBalance(unsigned int value);
 
         void SetHand(Card first, Card second);
+
+        unsigned int SendBet();
 
         void SetPlaying(bool status);
 

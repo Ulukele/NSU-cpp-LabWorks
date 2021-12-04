@@ -17,6 +17,7 @@ namespace Control {
     public:
         Game(unsigned int num_players, unsigned int start_balance);
         void Start();
+        void JudgeRound();
         void ProcessPlayersActions();
         bool ContinueRound();
         Models::Card PickOne();

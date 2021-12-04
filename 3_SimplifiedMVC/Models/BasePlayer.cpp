@@ -9,7 +9,7 @@ namespace Models {
     unsigned int BasePlayer::GetBalance() const { return balance; }
     unsigned int BasePlayer::GetBet() const { return bet; }
     const char* BasePlayer::GetName() const { return name; }
-    std::pair<Card, Card> BasePlayer::GetHand() const { return hand; }
+    const std::pair<Card, Card>& BasePlayer::GetHand() const { return hand; }
     bool BasePlayer::GetPlaying() const { return playing; }
 
     bool BasePlayer::MakeBet(unsigned int value) {
@@ -32,6 +32,12 @@ namespace Models {
     void BasePlayer::SetHand(Card first, Card second) {
         hand = std::make_pair(first, second);
         updater.Handle();
+    }
+
+    unsigned int BasePlayer::SendBet() {
+        unsigned int value = bet;
+        bet = 0;
+        return value;
     }
 
     void BasePlayer::SetPlaying(bool status) {
