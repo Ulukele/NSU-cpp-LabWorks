@@ -21,6 +21,5 @@ namespace View {
         Screen() = default;
         std::vector<Models::BasePlayer*> players;
         Models::Board* board;
-        unsigned int active_player_id = 0;
     };
 }

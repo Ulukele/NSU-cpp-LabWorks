@@ -17,11 +17,6 @@ namespace Control {
     public:
         Game(unsigned int num_players, unsigned int start_balance);
         void Start();
-        void JudgeRound();
-        void ProcessPlayersActions();
-        bool ContinueRound();
-        Models::Card PickOne();
-        void InitPlayers();
 
         Game(const Game &obj) = delete;
         Game &operator=(const Game &obj) = delete;
@@ -32,6 +27,14 @@ namespace Control {
         Models::Board* board;
         State state;
         std::vector<Models::Card> deck;
+
+        void StartRound();
+        void JudgeRound();
+        void ProcessPlayersActions();
+        bool ContinueRound();
+        Models::Card PickOne();
+        void InitPlayers();
+        unsigned int GetPlayingCount();
     };
 }
 

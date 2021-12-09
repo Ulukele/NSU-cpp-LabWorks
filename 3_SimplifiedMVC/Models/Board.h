@@ -14,12 +14,9 @@ namespace Models {
         const std::vector<Card>& GetCards() const;
         unsigned int GetPool() const;
         void RaisePool(unsigned int value);
+        void NullPool();
         void AddCard(Card card);
         void Clear();
-        void ProcessWinners(
-                const std::vector<BasePlayer*>& players,
-                const std::vector<std::vector<Card>>& combinations
-                );
 
         Board(const Board& obj) = delete;
         Board& operator=(const Board& obj) = delete;

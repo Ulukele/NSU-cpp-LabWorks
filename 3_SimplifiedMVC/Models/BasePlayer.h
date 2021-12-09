@@ -28,6 +28,9 @@ namespace Models {
         unsigned int GetBalance() const;
         unsigned int GetBet() const;
         bool GetPlaying() const;
+        bool GetWinner() const;
+        unsigned int GetCombinationLevel() const;
+        const char* GetCombination() const;
 
         bool MakeBet(unsigned int value);
 
@@ -38,6 +41,10 @@ namespace Models {
         unsigned int SendBet();
 
         void SetPlaying(bool status);
+
+        void SetWinner(bool status);
+
+        void SetCombinationLevel(unsigned int level);
 
         virtual bool IsBot() = 0;
 
@@ -51,5 +58,8 @@ namespace Models {
         unsigned int bet = 0;
         bool playing;
         std::pair<Card, Card> hand;
+
+        bool winner;
+        unsigned int combination_level;
     };
 }

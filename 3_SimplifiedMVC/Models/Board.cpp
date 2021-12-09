@@ -23,17 +23,9 @@ namespace Models {
         updater.Handle();
     }
 
-    void Board::ProcessWinners(const std::vector<BasePlayer*> &players,
-                               const std::vector<std::vector<Card>> &combinations) {
-        if (players.empty()) throw; // TODO
-
-        unsigned int pool_part = pool / players.size();
+    void Board::NullPool() {
         pool = 0;
-
-        for (const auto& player : players) {
-            player->RaiseBalance(pool_part);
-        }
-
+        updater.Handle();
     }
 
 }
