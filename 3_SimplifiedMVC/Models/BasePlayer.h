@@ -10,8 +10,8 @@ namespace Models {
 
     enum Action {
         FOLD,
-        CHECK,
         RAISE,
+        ALL_IN
     };
 
     struct Bet {
@@ -21,9 +21,9 @@ namespace Models {
 
     class BasePlayer : public BaseModel {
     public:
-        BasePlayer(unsigned int balance, const char* name);
+        BasePlayer(unsigned int balance, unsigned int id, std::string name);
 
-        const char* GetName() const;
+        std::string GetName() const;
         const std::pair<Card, Card>& GetHand() const;
         unsigned int GetBalance() const;
         unsigned int GetBet() const;
@@ -31,6 +31,7 @@ namespace Models {
         bool GetWinner() const;
         unsigned int GetCombinationLevel() const;
         const char* GetCombination() const;
+        double GetProb() const;
 
         bool MakeBet(unsigned int value);
 
@@ -46,20 +47,30 @@ namespace Models {
 
         void SetCombinationLevel(unsigned int level);
 
+        void SetProb(double prob_);
+
         virtual bool IsBot() = 0;
 
-        virtual Bet MakeDecision(const std::vector<Card>& board, const std::vector<unsigned int>& bets) = 0;
+        virtual Bet MakeDecision(
+                const std::vector<Card> &board,
+                unsigned int last_bet,
+                unsigned int players_count
+        ) = 0;
+
+        void TriggerUpdate();
 
         virtual ~BasePlayer() = default;
 
-    private:
-        const char* name;
+    protected:
+        unsigned int id;
+        std::string name;
         unsigned int balance = 0;
         unsigned int bet = 0;
+        double prob = 0.0;
         bool playing;
         std::pair<Card, Card> hand;
 
         bool winner;
-        unsigned int combination_level;
+        unsigned int combination_level{};
     };
 }

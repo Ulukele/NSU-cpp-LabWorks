@@ -13,4 +13,7 @@ namespace Models {
         Suit suit;
         unsigned short value;
     };
+
+    bool operator==(Card first, Card second);
+    bool operator<(Card first, Card second);
 }

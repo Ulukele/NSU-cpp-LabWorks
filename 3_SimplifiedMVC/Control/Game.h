@@ -15,7 +15,7 @@ namespace Control {
 
     class Game {
     public:
-        Game(unsigned int num_players, unsigned int start_balance);
+        Game(unsigned int num_bots, unsigned int num_playable, unsigned int start_balance);
         void Start();
 
         Game(const Game &obj) = delete;
@@ -30,11 +30,12 @@ namespace Control {
 
         void StartRound();
         void JudgeRound();
-        void ProcessPlayersActions();
+        void ProcessPlayersActions(unsigned int init_bet);
         bool ContinueRound();
         Models::Card PickOne();
         void InitPlayers();
         unsigned int GetPlayingCount();
+        void RefreshPlayersProb();
     };
 }
 

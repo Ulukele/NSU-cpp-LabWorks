@@ -1,4 +1,5 @@
 #include "Screen.h"
+#include "../Common/Common.h"
 
 namespace {
     void PrintCard(const Models::Card& card, bool sep=false) {
@@ -43,21 +44,25 @@ namespace View {
         printf("| Name:         | score:  | bet:    | cards:    |\n");
         printf("+---------------+---------+---------+-----------+\n");
         for (const auto& player : players) {
-            printf("|%15s| %6u$ | %6u$ |", player->GetName(), player->GetBalance(), player->GetBet());
-//            if ( !player->IsBot() ) {
-            if (true) {
+            std::string name = player->GetName();
+            if (!player->GetPlaying()) name = "X " + name;
+
+            printf("|%15s| %6u$ | %6u$ |", name.c_str(), player->GetBalance(), player->GetBet());
+            if ( !player->IsBot() ) {
                 auto hand = player->GetHand();
                 PrintCard(hand.first, true);
                 PrintCard(hand.second);
                 printf("|");
             }
             else {
-                printf("         |");
+                printf("           |");
             }
+            printf(" combination probability: %.1f", player->GetProb());
             printf("\n+---------------+---------+---------+-----------+\n");
             if (player->GetWinner()) winners.push_back(player);
         }
         printf("\nBank: %u", board->GetPool());
+        printf("\nLast bet: %u", board->GetLastBet());
         printf("\nTable Cards: ");
         for (const auto& card : board->GetCards()) {
             PrintCard(card);
@@ -76,7 +81,7 @@ namespace View {
                 PrintCard(hand.first, true);
                 PrintCard(hand.second, true);
                 for (const auto& board_card : board_cards) PrintCard(board_card, true);
-                printf("%15s |\n", winner->GetName());
+                printf("%15s |\n", winner->GetName().c_str());
                 printf("|                                                           |\n");
             }
             printf("*-----------------------------------------------------------*\n");

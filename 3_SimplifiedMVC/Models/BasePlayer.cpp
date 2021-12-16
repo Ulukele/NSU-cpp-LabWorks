@@ -1,10 +1,15 @@
 #include "BasePlayer.h"
+
+#include <utility>
 #include "Combinations.h"
+#include "../Common/Common.h"
+#include "../Common/Exception.h"
 
 namespace Models {
-    BasePlayer::BasePlayer(unsigned int balance, const char* name) :
+    BasePlayer::BasePlayer(unsigned int balance, unsigned int id, std::string name) :
+        id(id),
         balance(balance),
-        name(name),
+        name(std::move(name)),
         playing(false),
         winner(false),
         BaseModel()
@@ -12,14 +17,17 @@ namespace Models {
 
     unsigned int BasePlayer::GetBalance() const { return balance; }
     unsigned int BasePlayer::GetBet() const { return bet; }
-    const char* BasePlayer::GetName() const { return name; }
+    std::string BasePlayer::GetName() const { return name; }
     const std::pair<Card, Card>& BasePlayer::GetHand() const { return hand; }
     bool BasePlayer::GetPlaying() const { return playing; }
     bool BasePlayer::GetWinner() const { return winner; }
     unsigned int BasePlayer::GetCombinationLevel() const { return combination_level; }
     const char * BasePlayer::GetCombination() const { return COMBINATIONS[combination_level]; }
+    double BasePlayer::GetProb() const { return prob; }
 
     bool BasePlayer::MakeBet(unsigned int value) {
+        if (value < bet) return false;
+        value -= bet;
         if (balance >= value) {
             balance -= value;
             bet += value;
@@ -58,8 +66,17 @@ namespace Models {
     }
 
     void BasePlayer::SetCombinationLevel(unsigned int level) {
-        if (combination_level >= COMBINATIONS_COUNT) throw; // TODO
+        if (combination_level >= COMBINATIONS_COUNT) throw Exception::Exception("Invalid combination level");
         combination_level = level;
     }
+
+    void BasePlayer::SetProb(double prob_) {
+        prob = prob_;
+        updater.Handle();
+    }
+
+    void BasePlayer::TriggerUpdate() {
+        updater.Handle();
+    };
 
 }

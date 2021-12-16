@@ -7,9 +7,13 @@ namespace Models {
 
     class HumanPlayer : public BasePlayer {
     public:
-        HumanPlayer(unsigned int balance, const char* name);
+        HumanPlayer(unsigned int balance, unsigned int id, std::string name);
         bool IsBot() override;
-        Bet MakeDecision(const std::vector<Card>& board, const std::vector<unsigned int>& bets) override;
+        Bet MakeDecision(
+                const std::vector<Card> &board,
+                unsigned int last_bet,
+                unsigned int players_count
+        ) override;
     };
 
 }

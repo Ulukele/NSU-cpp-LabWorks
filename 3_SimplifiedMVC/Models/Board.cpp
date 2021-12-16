@@ -1,11 +1,11 @@
 #include "Board.h"
 
 namespace Models {
-    Board::Board() : pool(0) {}
+    Board::Board() : BaseModel(), pool(0) {}
 
     unsigned int Board::GetPool() const { return pool; }
-
     const std::vector<Card>& Board::GetCards() const { return cards; }
+    unsigned int Board::GetLastBet() const { return last_bet; }
 
     void Board::AddCard(Card card) {
         cards.push_back(card);
@@ -25,6 +25,11 @@ namespace Models {
 
     void Board::NullPool() {
         pool = 0;
+        updater.Handle();
+    }
+
+    void Board::SetLastBet(unsigned int last) {
+        last_bet = last;
         updater.Handle();
     }
 
