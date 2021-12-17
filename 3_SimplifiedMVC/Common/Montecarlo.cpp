@@ -5,27 +5,20 @@
 #include <iostream>
 #include <tuple>
 #include <algorithm>
-
-#include <iostream>
-#include <algorithm>
 #include <random>
 #include <iterator>
 
-namespace
-{
+namespace {
     constexpr auto x = std::array<int, 4>{2, 2, 2, 1};
 }
 
 namespace Montecarlo {
-    bool eval_best_hand(const std::vector<CardsWithTableCombined>& all_cards_with_table_combined)
-    // returns true if first player has best hand
-    {
+    bool eval_best_hand(const std::vector<CardsWithTableCombined>& all_cards_with_table_combined) {
         std::vector<std::tuple< std::vector<int>, std::vector<int>, std::string>> all_players_score;
         std::vector<std::tuple< std::vector<int>, std::vector<int>, std::string>>  all_players_score_original;
         bool best_hand;
 
-        for (const auto& cards_with_table : all_cards_with_table_combined)
-        {
+        for (const auto& cards_with_table : all_cards_with_table_combined) {
             auto result = calc_score(cards_with_table);
             all_players_score.emplace_back(result);
         }
@@ -76,8 +69,7 @@ namespace Montecarlo {
         // sort tuple and split into score and card ranks
         std::sort(rcounts.begin(), rcounts.end(), std::greater<std::tuple<int, int>>());
         for (auto it = std::make_move_iterator(rcounts.begin()),
-                     end = std::make_move_iterator(rcounts.end()); it != end; ++it)
-        {
+                     end = std::make_move_iterator(rcounts.end()); it != end; ++it) {
             score.push_back(std::get<0>(*it));  // amount of occurrences
             card_ranks.push_back(std::get<1>(*it));  // ranks of individual cards
         }
@@ -89,7 +81,7 @@ namespace Montecarlo {
         auto sub_score2 = slice(score, 0, 2);
         auto sub_score4 = slice(score, 0, 5);
         auto sub_score0 = slice(score, 0, 0);
-        // # fullhouse(three of a kind and pair, or two three of a kind)
+        // fullhouse(three of a kind and pair, or two three of a kind)
         if (sub_score2 == std::vector<int> {3, 2} || sub_score2 == std::vector<int> {3, 3}) {
             // make adjustment
             card_ranks = slice(card_ranks, 0, 2);
@@ -109,9 +101,7 @@ namespace Montecarlo {
             std::sort(sorted_card_ranks.begin(), sorted_card_ranks.end(), std::greater <>());
             card_ranks = { sorted_card_ranks[0], sorted_card_ranks[1] };
         }
-        else if (score.size() >= 5) {  // high card, flush, straight and straight flush
-            // straight
-            // adjust for 5 high straight
+        else if (score.size() >= 5) {
             if (std::find(card_ranks.begin(), card_ranks.end(), 12) != card_ranks.end())
                 card_ranks.push_back(-1);
             sorted_card_ranks = card_ranks;
@@ -134,7 +124,7 @@ namespace Montecarlo {
 
             std::vector<int> suit_counts;
             std::vector<std::string> suit_cards;
-            for (const auto& suit : original_suits) {  // why can original_suits not be a string and suit a char?
+            for (const auto& suit : original_suits) {
                 int count = std::count(available_suits.begin(), available_suits.end(), suit);
                 if (count > 0) {
                     rsuits.emplace_back(std::make_pair(count, suit));
@@ -143,8 +133,7 @@ namespace Montecarlo {
             std::sort(rsuits.begin(), rsuits.end(), std::greater<std::tuple<int, std::string>>());
             flush = std::get<0>(rsuits[0]) >= 5; // the most occurred suit appear at least 5 times
 
-            if (flush == true)
-            {
+            if (flush == true) {
                 auto flush_suit = std::get<1>(rsuits[0]);
                 CardsWithTableCombined flush_hand;
                 for (auto card : all_cards_with_table_combined) {
@@ -159,8 +148,7 @@ namespace Montecarlo {
                 card_ranks.clear();
                 score.clear();
                 for (auto it = std::make_move_iterator(rcounts_flush.begin()),
-                             end = std::make_move_iterator(rcounts_flush.end()); it != end; ++it)
-                {
+                             end = std::make_move_iterator(rcounts_flush.end()); it != end; ++it) {
                     score.push_back(std::get<0>(*it));  // ranks of individual cards
                     card_ranks.push_back(std::get<1>(*it));  // amount of occurrences
                 }
@@ -174,8 +162,7 @@ namespace Montecarlo {
 
                 for (int i = 0; i < card_ranks.size() - 4; i++) {
                     straight = card_ranks[i] - card_ranks[i + 4] == 4;
-                    if (straight == true)
-                    {
+                    if (straight == true) {
                         break;
                     }
                 }
@@ -247,8 +234,7 @@ namespace Montecarlo {
 
         int wins = 0;
 
-        for (int i = 0; i < iterations; i++)
-        {
+        for (int i = 0; i < iterations; i++) {
             Deck deck;
             deck.remove_visible_cards(my_cards, cards_on_table);
             deck.distribute_cards(number_of_players);
@@ -258,7 +244,6 @@ namespace Montecarlo {
                 wins += 1;
         }
         double equity = (wins / (double)iterations) * 100.0;
-//        std::cout << "Equity: " << equity << "%" << std::endl;
         return equity;
     }
 
@@ -266,14 +251,12 @@ namespace Montecarlo {
 
     Deck::Deck() {
         std::string combined;
-        //std::cout << "Constructing deck..." << std::endl;
         for (char& r : ranks) {
             for (char& s : suits) {
                 combined = std::string() + r + s;
                 full_deck.insert(combined);
             };
         };
-        //std::cout << "Cards in deck: " << full_deck.size() << std::endl;
     }
 
     void Deck::remove_visible_cards(const Hand& my_cards_, const std::set<std::string>& cards_on_table_) {
@@ -285,13 +268,8 @@ namespace Montecarlo {
         set_difference(remaining_cards_tmp.begin(), remaining_cards_tmp.end(), cards_on_table_.begin(),
                        cards_on_table_.end(),
                        std::inserter(remaining_cards, remaining_cards.end()));
-
-        //std::cout << "Remaining cards: " << remaining_cards.size() << std::endl;
-
         this->my_cards = my_cards_.cards;
         this->cards_on_table = cards_on_table_;
-
-        //std::cout << "Removed my cards from deck...\n";
     }
 
     void Deck::distribute_cards(int number_players) {
@@ -314,18 +292,7 @@ namespace Montecarlo {
         while (cards_on_table.size() < 5) {
             cards_on_table.emplace(*++card_it);
         }
-
-        // print out the hands
-        //for (auto const& player_hand : player_hands) {
-        //	std::cout << "Cards: ";
-        //	for (const auto& card : player_hand.cards)
-        //		std::cout << card << " ";
-        //	std::cout << std::endl;
-        //}
         this->player_hands = player_hands;
-
-        //std::cout << "Cards on table: ";
-        //print_set(cards_on_table);
     }
 
     std::vector<CardsWithTableCombined> Deck::get_cards_combined() {

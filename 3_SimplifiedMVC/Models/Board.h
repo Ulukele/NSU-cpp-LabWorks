@@ -14,11 +14,13 @@ namespace Models {
         const std::vector<Card>& GetCards() const;
         unsigned int GetPool() const;
         unsigned int GetLastBet() const;
+        unsigned int GetActivePlayer() const;
         void RaisePool(unsigned int value);
         void NullPool();
         void AddCard(Card card);
         void Clear();
         void SetLastBet(unsigned int last);
+        void SetActivePlayer(unsigned int id);
 
         Board(const Board& obj) = delete;
         Board& operator=(const Board& obj) = delete;
@@ -27,6 +29,7 @@ namespace Models {
 
         unsigned int pool;
         unsigned int last_bet;
+        unsigned int active_player_id;
         std::vector<Card> cards;
     };
 }

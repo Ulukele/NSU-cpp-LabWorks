@@ -10,8 +10,7 @@ namespace Models {
 
     enum Action {
         FOLD,
-        RAISE,
-        ALL_IN
+        RAISE
     };
 
     struct Bet {
@@ -32,21 +31,17 @@ namespace Models {
         unsigned int GetCombinationLevel() const;
         const char* GetCombination() const;
         double GetProb() const;
+        unsigned int GetId() const;
 
         bool MakeBet(unsigned int value);
 
         void RaiseBalance(unsigned int value);
 
         void SetHand(Card first, Card second);
-
         unsigned int SendBet();
-
         void SetPlaying(bool status);
-
         void SetWinner(bool status);
-
         void SetCombinationLevel(unsigned int level);
-
         void SetProb(double prob_);
 
         virtual bool IsBot() = 0;

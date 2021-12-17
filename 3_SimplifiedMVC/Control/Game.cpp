@@ -13,7 +13,6 @@
 
 namespace {
     bool CheckBet(Models::BasePlayer* player, Models::Bet bet, unsigned int last_bet) {
-
         if (bet.action == Models::Action::FOLD) return true;
         return bet.value <= player->GetBalance() + player->GetBet() && bet.value >= last_bet;
     }
@@ -143,6 +142,7 @@ namespace Control {
         board->SetLastBet(last_bet);
         for (const auto& player : players) {
             if (!player->GetPlaying()) continue;
+            board->SetActivePlayer(player->GetId());
 
             Models::Bet bet{Models::Action::FOLD, 0};
             if (player->GetBalance() + player->GetBet() < last_bet) continue;
@@ -204,7 +204,6 @@ namespace Control {
         unsigned int last_bet = 0;
         while (true) {
             ProcessPlayersActions(last_bet);
-            std::vector<unsigned int> bets;
             unsigned int max_bet = 0;
             for (const auto& player : players) {
                 max_bet = std::max(max_bet, player->GetBet());

@@ -48,10 +48,6 @@ namespace Models {
         }
         unsigned int value = std::min(balance + bet, target);
 
-        if (value == bet + balance) {
-            Bet{ALL_IN, value};
-        }
-
         return Bet{RAISE, value};
     }
 }

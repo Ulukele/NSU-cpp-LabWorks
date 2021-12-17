@@ -24,6 +24,7 @@ namespace Models {
     unsigned int BasePlayer::GetCombinationLevel() const { return combination_level; }
     const char * BasePlayer::GetCombination() const { return COMBINATIONS[combination_level]; }
     double BasePlayer::GetProb() const { return prob; }
+    unsigned int BasePlayer::GetId() const { return id; }
 
     bool BasePlayer::MakeBet(unsigned int value) {
         if (value < bet) return false;

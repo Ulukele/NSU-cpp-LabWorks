@@ -38,6 +38,7 @@ namespace View {
     void Screen::Update() {
 
         std::vector<Models::BasePlayer*> winners;
+        unsigned int active_player_id = board->GetActivePlayer();
 
         printf("\033[H\033[J");
         printf("+---------------+---------+---------+-----------+\n");
@@ -48,7 +49,7 @@ namespace View {
             if (!player->GetPlaying()) name = "X " + name;
 
             printf("|%15s| %6u$ | %6u$ |", name.c_str(), player->GetBalance(), player->GetBet());
-            if ( !player->IsBot() ) {
+            if ( !player->IsBot() && player->GetId() == active_player_id ) {
                 auto hand = player->GetHand();
                 PrintCard(hand.first, true);
                 PrintCard(hand.second);
