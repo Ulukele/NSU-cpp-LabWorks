@@ -10,33 +10,33 @@ namespace Models {
 
     void Board::AddCard(Card card) {
         cards.push_back(card);
-        updater.Handle();
+        Update();
     }
 
     void Board::RaisePool(unsigned int value) {
         pool += value;
-        updater.Handle();
+        Update();
     }
 
     void Board::Clear() {
         pool = 0;
         cards.resize(0);
-        updater.Handle();
+        Update();
     }
 
     void Board::NullPool() {
         pool = 0;
-        updater.Handle();
+        Update();
     }
 
     void Board::SetLastBet(unsigned int last) {
         last_bet = last;
-        updater.Handle();
+        Update();
     }
 
     void Board::SetActivePlayer(unsigned int id) {
         active_player_id = id;
-        updater.Handle();
+        Update();
     }
 
 }

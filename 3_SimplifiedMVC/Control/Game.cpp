@@ -7,7 +7,6 @@
 #include <random>
 #include "../Models/HumanPlayer.h"
 #include "../Models/EquityBotPlayer.h"
-#include "../View/Screen.h"
 #include "../Common/Common.h"
 #include "../Common/Exception.h"
 
@@ -44,7 +43,11 @@ namespace Control {
         state = State::END;
         board = new Models::Board();
 
-        View::Screen::Instance().Init(players, board);
+        screen = new View::Screen(players, board);
+        for (const auto& player : players) {
+            player->AddUpdater(screen);
+        }
+        board->AddUpdater(screen);
     }
 
     void Game::InitPlayers() {
@@ -161,7 +164,7 @@ namespace Control {
                         bet = {Models::Action::RAISE, (unsigned int) value};
                     }
                     if (CheckBet(player, bet, last_bet)) break;
-                    player->TriggerUpdate();
+                    player->Update();
                 }
             }
             if (!CheckBet(player, bet, last_bet)) {
@@ -227,6 +230,7 @@ namespace Control {
             delete player;
         }
         delete board;
+        delete screen;
     }
 
     Models::Card Game::PickOne() {

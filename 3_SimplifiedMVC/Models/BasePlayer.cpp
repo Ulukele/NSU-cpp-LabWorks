@@ -32,7 +32,7 @@ namespace Models {
         if (balance >= value) {
             balance -= value;
             bet += value;
-            updater.Handle();
+            Update();
             return true;
         }
         else {
@@ -42,12 +42,12 @@ namespace Models {
 
     void BasePlayer::RaiseBalance(unsigned int value) {
         balance += value;
-        updater.Handle();
+        Update();
     }
 
     void BasePlayer::SetHand(Card first, Card second) {
         hand = std::make_pair(first, second);
-        updater.Handle();
+        Update();
     }
 
     unsigned int BasePlayer::SendBet() {
@@ -58,12 +58,12 @@ namespace Models {
 
     void BasePlayer::SetPlaying(bool status) {
         playing = status;
-        updater.Handle();
+        Update();
     }
 
     void BasePlayer::SetWinner(bool status) {
         winner = status;
-        updater.Handle();
+        Update();
     }
 
     void BasePlayer::SetCombinationLevel(unsigned int level) {
@@ -73,11 +73,7 @@ namespace Models {
 
     void BasePlayer::SetProb(double prob_) {
         prob = prob_;
-        updater.Handle();
+        Update();
     }
-
-    void BasePlayer::TriggerUpdate() {
-        updater.Handle();
-    };
 
 }

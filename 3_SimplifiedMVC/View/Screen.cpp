@@ -24,18 +24,13 @@ namespace {
 }
 
 namespace View {
-    Screen& Screen::Instance() {
-        static Screen instance;
-        return instance;
-    }
 
-    void Screen::Init(const std::vector<Models::BasePlayer*>& players_models, Models::Board* board_) {
-        players = players_models;
-        board = board_;
-        Update();
-    }
+    Screen::Screen(const std::vector<Models::BasePlayer*>& players_models, Models::Board* board_) :
+        players(players_models),
+        board(board_)
+        {}
 
-    void Screen::Update() {
+    void Screen::Update() const {
 
         std::vector<Models::BasePlayer*> winners;
         unsigned int active_player_id = board->GetActivePlayer();

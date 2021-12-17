@@ -52,8 +52,6 @@ namespace Models {
                 unsigned int players_count
         ) = 0;
 
-        void TriggerUpdate();
-
         virtual ~BasePlayer() = default;
 
     protected:

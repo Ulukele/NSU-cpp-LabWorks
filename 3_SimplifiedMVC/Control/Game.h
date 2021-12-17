@@ -2,6 +2,7 @@
 
 #include "../Models/BasePlayer.h"
 #include "../Models/Board.h"
+#include "../View/Screen.h"
 
 
 namespace Control {
@@ -23,6 +24,7 @@ namespace Control {
         ~Game();
 
     private:
+        View::Screen* screen;
         std::vector<Models::BasePlayer*> players;
         Models::Board* board;
         State state;

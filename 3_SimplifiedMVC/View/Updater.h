@@ -5,7 +5,7 @@ namespace View {
     public:
         explicit Updater() = default;
 
-        void Handle() const;
+        virtual void Update() const = 0;
 
         Updater(const Updater &obj) = delete;
         Updater &operator=(const Updater &obj) = delete;

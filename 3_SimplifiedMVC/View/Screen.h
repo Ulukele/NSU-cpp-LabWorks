@@ -8,11 +8,10 @@
 
 namespace View {
 
-    class Screen {
+    class Screen : public Updater {
     public:
-        static Screen &Instance();
-        void Init(const std::vector<Models::BasePlayer*>& players_models, Models::Board* board_);
-        void Update();
+        Screen(const std::vector<Models::BasePlayer*>& players_models, Models::Board* board_);
+        void Update() const override;
 
         Screen(const Screen& obj) = delete;
         Screen& operator=(const Screen& obj) = delete;
