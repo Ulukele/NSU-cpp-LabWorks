@@ -4,6 +4,7 @@
 #include <tuple>
 #include <iostream>
 #include <sstream>
+#include "../Exceptions/TableItemException.h"
 
 namespace {
 
@@ -15,42 +16,42 @@ namespace {
     }
 
     template<size_t I, class... Args>
-    struct delimiter_reader {
-        static bool read_with_delimiter(std::istream& is, std::tuple<Args...> &t, char delimiter) {
-            std::string buff;
-            if (is.peek() == EOF) return false;
-            getline(is, buff, delimiter);
-//            if (buff[buff.size() - 1] != delimiter) return false;
-            return convert(buff, std::get<I>(t));
-        }
-    };
-
-    template<size_t I, class... Args>
     struct reader {
-        static bool read(std::istream &is, std::tuple<Args...> &t, char delimiter) {
-            reader<I - 1, Args...>::read(is, t, delimiter);
-            return delimiter_reader<I, Args...>::read_with_delimiter(is, t, delimiter);
+        static int read(std::vector<std::string>& columns, std::tuple<Args...> &t) {
+            int readed = reader<I - 1, Args...>::read(columns, t);
+            if (columns.size() <= I) {
+                return readed;
+            }
+            convert(columns[I], std::get<I>(t));
+            return readed + 1;
         }
     };
 
     template<class... Args>
     struct reader<0, Args...> {
-        static bool read(std::istream& is, std::tuple<Args...>& t, char delimiter) {
-            return delimiter_reader<0, Args...>::read_with_delimiter(is, t, delimiter);
-        }
-    };
-
-    template<size_t I, class... Args>
-    struct reader_ {
-        static bool read(std::istream &is, std::tuple<Args...> &t, char row_delimiter, char col_delimiter) {
-            reader<I - 1, Args...>::read(is, t, col_delimiter);
-            return delimiter_reader<I, Args...>::read_with_delimiter(is, t, row_delimiter);
+        static int read(std::vector<std::string>& columns, std::tuple<Args...>& t) {
+            if (columns.empty()) {
+                return 0;
+            }
+            convert(columns[0], std::get<0>(t));
+            return 1;
         }
     };
 
     template<class... Args>
-    bool read_tuple(std::istream& is, std::tuple<Args...>& t, char row_delimiter, char col_delimiter) {
-        return reader_<sizeof...(Args) - 1, Args...>::read(is, t, row_delimiter, col_delimiter);
+    int read_tuple(std::istream& is, std::tuple<Args...>& t, char row_delimiter, char col_delimiter) {
+        std::string row;
+        std::getline(is, row, row_delimiter);
+        std::istringstream row_stream(row);
+
+        std::vector<std::string> columns;
+        while (row_stream.peek() != EOF) {
+            std::string column;
+            std::getline(row_stream, column, col_delimiter);
+            columns.push_back(column);
+        }
+
+        return reader<sizeof...(Args) - 1, Args...>::read(columns, t);
     }
 }
 
@@ -60,65 +61,104 @@ public:
 
     CSVParser(
             std::istream& instream,
-            size_t skip_lines,
+            int skip_lines,
             char row_delimiter='\n', // default delimiter
             char col_delimiter=','   // default delimiter
     ):
     instream(instream),
     skip_lines(skip_lines),
     row_delimiter(row_delimiter),
-    col_delimiter(col_delimiter) {}
-
-    size_t GetSkipLines() { return skip_lines; }
+    col_delimiter(col_delimiter) {
+        std::tuple<Args...> t;
+        for (int i = 0 ; i < skip_lines; ++i) {
+            read_tuple(instream, t, row_delimiter, col_delimiter);
+        }
+        skip_count = (int)(instream.tellg());
+        instream.seekg(0);
+    }
 
     class iterator
     {
         CSVParser<Args...>* obj_;
-        size_t skip_lines;
+        int count;
+        int lines;
         std::tuple<Args...> current_;
     public:
         using value_type = std::tuple<Args...>;
         using reference = const std::tuple<Args...>&;
         using pointer = const std::tuple<Args...>*;
         using iterator_category = std::input_iterator_tag;
-        iterator(size_t skip_lines, CSVParser<Args...>* obj=nullptr): obj_(obj), skip_lines(skip_lines) {
+
+        iterator(CSVParser<Args...>* obj): obj_(obj) {
             if (obj_ != nullptr) {
-                for (size_t i = 0; i <= skip_lines; ++i) {
-                    obj_->next(current_);
-                }
+                lines = obj_->skip_lines;
+                count = obj_->skip_count;
+                increment();
             }
         }
-        reference operator*() const { return current_; }
-        iterator& operator++() { increment(); return *this; }
-        iterator operator++(int) { increment(); return *this; }
-        bool operator==(iterator rhs) const { return obj_ == rhs.obj_; }
-        bool operator!=(iterator rhs) const { return !(rhs == *this); }
+
+        reference operator*() const {
+            return current_;
+        }
+
+        iterator& operator++() {
+            increment(); return *this;
+        }
+
+        iterator operator++(int) {
+            increment(); return *this;
+        }
+
+        bool operator==(iterator rhs) const {
+            return (obj_ == rhs.obj_ && (obj_ == nullptr || count == rhs.count));
+        }
+
+        bool operator!=(iterator rhs) const {
+            return !(rhs == *this);
+        }
+
     protected:
         void increment() {
-            if (!obj_->valid()) {
+            if (!valid(count)) {
                 obj_ = nullptr;
                 return;
             }
-            skip_lines++;
-            obj_->next(current_);
+            lines++;
+            next(current_, count);
+        }
+        void next(std::tuple<Args...>& t, int& skip_c) {
+            obj_->instream.seekg(skip_c);
+            int readed_count = read_tuple(obj_->instream, t, obj_->row_delimiter, obj_->col_delimiter);
+            if (readed_count < sizeof...(Args)) {
+                throw Exceptions::TableItemException(lines, readed_count + 1);
+            }
+            skip_c = obj_->instream.tellg();
+            obj_->instream.seekg(0);
+        }
+
+        bool valid(int skip_c) const {
+            if (obj_ == nullptr) return false;
+            obj_->instream.seekg(skip_c);
+            bool status = obj_->instream.peek() != EOF;
+            obj_->instream.seekg(0);
+            return status;
         }
     };
-    iterator begin() { return iterator{skip_lines, this}; }
-    iterator end() { return iterator{skip_lines}; }
 
-    void next(std::tuple<Args...>& t) {
-        read_tuple(instream, t, row_delimiter, col_delimiter);
+    iterator begin() {
+        return iterator{this};
     }
 
-    bool valid() const {
-        return instream.peek() != EOF;
+    iterator end() {
+        return iterator{nullptr};
     }
 
     ~CSVParser() = default;
 
 private:
     std::istream& instream;
-    size_t skip_lines;
+    int skip_lines;
+    int skip_count;
     char row_delimiter;
     char col_delimiter;
 

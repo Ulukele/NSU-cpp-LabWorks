@@ -8,11 +8,18 @@
 int main() {
 
     std::ifstream file("data.csv");
-    CSVParser<std::string, int, bool> cp(file, 0, ';', ',');
+    CSVParser<std::string, int, bool> cp(file, 1, ';', ',');
 
-    for (const auto& t : cp) {
-        std::cout << t << std::endl;
+    try {
+        for (const auto &t : cp) {
+            std::cout << t << std::endl;
+        }
     }
+    catch (std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+
 
     return 0;
 }
