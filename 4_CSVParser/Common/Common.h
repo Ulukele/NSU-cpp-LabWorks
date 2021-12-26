@@ -3,19 +3,27 @@
 #include <tuple>
 #include <iostream>
 
-namespace aux {
-    template<std::size_t...> struct seq{};
+namespace {
 
-    template<std::size_t N, std::size_t... Is>
-    struct gen_seq : gen_seq<N-1, N-1, Is...>{};
+    template<class Ch, class Tr, size_t I, class... Args>
+    struct printer {
+        static void print(std::basic_ostream<Ch, Tr>& os, const std::tuple<Args...>& t) {
+            printer<Ch, Tr, I - 1, Args...>::print(os, t);
+            os << ", ";
+            os << std::get<I>(t);
+        }
+    };
 
-    template<std::size_t... Is>
-    struct gen_seq<0, Is...> : seq<Is...>{};
+    template<class Ch, class Tr, class... Args>
+    struct printer<Ch, Tr, 0, Args...> {
+        static void print(std::basic_ostream<Ch, Tr>& os, const std::tuple<Args...>& t) {
+            os << std::get<0>(t);
+        }
+    };
 
-    template<class Ch, class Tr, class Tuple, std::size_t... Is>
-    void print_tuple(std::basic_ostream<Ch,Tr>& os, Tuple const& t, seq<Is...>) {
-        using swallow = int[];
-        (void)swallow{0, (void(os << (Is == 0 ? "" : ", ") << std::get<Is>(t)), 0)...};
+    template<class Ch, class Tr, class... Args>
+    void print_tuple(std::basic_ostream<Ch,Tr>& os, const std::tuple<Args...>& t) {
+        printer<Ch, Tr, sizeof...(Args) - 1, Args...>::print(os, t);
     }
 }
 
@@ -23,6 +31,6 @@ template<class Ch, class Tr, class... Args>
 auto operator<<(std::basic_ostream<Ch, Tr>& os, std::tuple<Args...> const& t)
     -> std::basic_ostream<Ch, Tr>& {
     os << '(';
-    aux::print_tuple(os, t, aux::gen_seq<sizeof...(Args)>());
+    print_tuple(os, t);
     return os << ')';
 }
